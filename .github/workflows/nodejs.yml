@@ -8,21 +8,21 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./backend
+
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
       - name: Install Backend Dependencies
-        run: |
-          cd backend
-          npm install
+        run: npm install
 
       - name: Run Unit Tests
-        run: |
-          cd backend
-          npm test
+        run: npm test
