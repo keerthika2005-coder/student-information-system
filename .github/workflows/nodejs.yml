@@ -9,6 +9,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./backend
+
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4
@@ -18,12 +22,8 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install Backend Dependencies
-        run: |
-          cd ./backend
-          npm install
+      - name: Install Dependencies
+        run: npm install
 
-      - name: Run Unit Tests
-        run: |
-          cd ./backend
-          npm jest
+      - name: Run Tests
+        run: npm test
