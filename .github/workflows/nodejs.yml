@@ -13,18 +13,17 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v4
 
-      - name: Show Files
-        run: ls -R
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
       - name: Install Backend Dependencies
-        run: npm install
-        working-directory: backend
+        run: |
+          cd ./backend
+          npm install
 
-      - name: Run Tests
-        run: npm test
-        working-directory: backend
+      - name: Run Unit Tests
+        run: |
+          cd ./backend
+          npm test
