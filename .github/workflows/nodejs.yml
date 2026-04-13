@@ -2,8 +2,8 @@ name: MERN CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -11,19 +11,22 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: backend
 
     steps:
-      - name: Checkout Project
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install packages
+        run: npm ci
 
-      - name: Run Tests
+      - name: Check files
+        run: ls -R
+
+      - name: Run tests
         run: npm test
