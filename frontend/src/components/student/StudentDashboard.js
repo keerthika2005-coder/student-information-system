@@ -1,105 +1,46 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-
-const API = axios.create({
-  baseURL: 'https://student-information-system-f2js.onrender.com/api'
-});
+import React, { useEffect, useState } from 'react';
 
 export default function StudentDashboard() {
-  const [rollNumber, setRollNumber] = useState('');
   const [student, setStudent] = useState(null);
 
-  const fetchStudent = async () => {
-    try {
-      const res = await API.get(
-        `/student/${rollNumber}`
-      );
+  useEffect(() => {
+    const loggedUser =
+      JSON.parse(localStorage.getItem('loggedUser'));
 
-      setStudent(res.data);
-    } catch (error) {
-      alert('Student not found');
-    }
-  };
+    const students =
+      JSON.parse(localStorage.getItem('students')) || [];
+
+    const foundStudent = students.find(
+      (s) => s.name === loggedUser.username
+    );
+
+    setStudent(foundStudent);
+  }, []);
+
+  if (!student)
+    return <h2 style={{ textAlign: 'center' }}>No Data</h2>;
 
   return (
-    <div style={containerStyle}>
-      <h1 style={headingStyle}>
+    <div className="dashboard-container">
+      <h2 className="dashboard-title">
         🎓 Student Dashboard
-      </h1>
+      </h2>
 
-      <input
-        placeholder="Enter Roll Number"
-        value={rollNumber}
-        onChange={(e) =>
-          setRollNumber(e.target.value)
-        }
-        style={inputStyle}
-      />
-
-      <button
-        onClick={fetchStudent}
-        style={buttonStyle}
-      >
-        View Result
-      </button>
-
-      {student && (
-        <div style={cardStyle}>
-          <p>
-            <b>Name:</b> {student.name}
-          </p>
-          <p>
-            <b>Roll No:</b>{' '}
-            {student.rollNumber}
-          </p>
-          <p>
-            <b>Subject:</b>{' '}
-            {student.subject}
-          </p>
-          <p>
-            <b>Marks:</b> {student.marks}
-          </p>
-          <p>
-            <b>Attendance:</b>{' '}
-            {student.attendance}%
-          </p>
-          <p>
-            <b>Grade:</b> {student.grade}
-          </p>
-          <p>
-            <b>Exam Date:</b>{' '}
-            {student.examDate}
-          </p>
-        </div>
-      )}
+      <div className="student-card">
+        <p><b>Name:</b> {student.name}</p>
+        <p><b>Subject:</b> {student.subject}</p>
+        <p><b>Attendance:</b> {student.attendance}%</p>
+        <p>
+          <b>Assignment Marks:</b>{' '}
+          {student.assignmentMarks}
+        </p>
+        <p>
+          <b>Internal Marks:</b>{' '}
+          {student.internalMarks}
+        </p>
+        <p><b>Total:</b> {student.total}</p>
+        <p><b>Grade:</b> {student.grade}</p>
+      </div>
     </div>
   );
 }
-
-const containerStyle = {
-  maxWidth: '700px',
-  margin: 'auto',
-  padding: '30px',
-  textAlign: 'center'
-};
-
-const headingStyle = {
-  marginBottom: '30px'
-};
-
-const inputStyle = {
-  width: '100%',
-  padding: '10px',
-  marginBottom: '15px'
-};
-
-const buttonStyle = {
-  padding: '10px 20px',
-  marginBottom: '20px'
-};
-
-const cardStyle = {
-  padding: '20px',
-  boxShadow: '0 0 10px #ccc',
-  borderRadius: '10px'
-};

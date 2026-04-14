@@ -1,125 +1,113 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-
-const API = axios.create({
-  baseURL: 'https://student-information-system-f2js.onrender.com/api'
-});
-
-API.interceptors.request.use((req) => {
-  req.headers['x-auth-token'] = localStorage.getItem('token');
-  return req;
-});
+import React, { useState, useEffect } from 'react';
 
 export default function StaffDashboard() {
-  const [formData, setFormData] = useState({
-    rollNumber: '',
-    subject: '',
-    marks: '',
-    attendance: '',
-    examDate: ''
-  });
+  const [students, setStudents] = useState([]);
+  const [subject, setSubject] = useState('');
+  const [studentName, setStudentName] = useState('');
+  const [attendance, setAttendance] = useState('');
+  const [assignmentMarks, setAssignmentMarks] = useState('');
+  const [internalMarks, setInternalMarks] = useState('');
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  useEffect(() => {
+    const savedStudents =
+      JSON.parse(localStorage.getItem('students')) || [];
+    setStudents(savedStudents);
+  }, []);
 
-  const getGrade = (marks) => {
-    const m = Number(marks);
-
-    if (m >= 90) return 'A+';
-    if (m >= 80) return 'A';
-    if (m >= 70) return 'B+';
-    if (m >= 60) return 'B';
-    if (m >= 50) return 'C';
+  const calculateGrade = (total) => {
+    if (total >= 90) return 'A+';
+    if (total >= 80) return 'A';
+    if (total >= 70) return 'B+';
+    if (total >= 60) return 'B';
+    if (total >= 50) return 'C';
     return 'F';
   };
 
-  const saveRecord = async () => {
-    try {
-      const grade = getGrade(formData.marks);
+  const saveRecord = () => {
+    const total =
+      Number(assignmentMarks) + Number(internalMarks);
 
-      await API.post('/staff/update-student', {
-        ...formData,
-        grade
-      });
+    const grade = calculateGrade(total);
 
-      alert('Student record updated successfully');
-    } catch (error) {
-      alert('Save failed');
-    }
+    const updatedStudents = students.map((student) =>
+      student.name === studentName
+        ? {
+            ...student,
+            subject,
+            attendance,
+            assignmentMarks,
+            internalMarks,
+            total,
+            grade
+          }
+        : student
+    );
+
+    localStorage.setItem(
+      'students',
+      JSON.stringify(updatedStudents)
+    );
+
+    setStudents(updatedStudents);
+
+    alert('Student record saved successfully');
+
+    setSubject('');
+    setStudentName('');
+    setAttendance('');
+    setAssignmentMarks('');
+    setInternalMarks('');
   };
 
   return (
-    <div style={containerStyle}>
-      <h1 style={headingStyle}>
-        👩‍🏫 Staff Dashboard
-      </h1>
+    <div className="dashboard-container">
+      <h2 className="dashboard-title">👩‍🏫 Staff Dashboard</h2>
 
-      <input
-        name="rollNumber"
-        placeholder="Roll Number"
-        onChange={handleChange}
-        style={inputStyle}
-      />
+      <div className="form-box">
+        <input
+          placeholder="Subject"
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+        />
 
-      <input
-        name="subject"
-        placeholder="Subject"
-        onChange={handleChange}
-        style={inputStyle}
-      />
+        <select
+          value={studentName}
+          onChange={(e) => setStudentName(e.target.value)}
+        >
+          <option value="">Select Student</option>
+          {students.map((student, index) => (
+            <option key={index} value={student.name}>
+              {student.name}
+            </option>
+          ))}
+        </select>
 
-      <input
-        name="marks"
-        placeholder="Marks"
-        onChange={handleChange}
-        style={inputStyle}
-      />
+        <input
+          placeholder="Attendance %"
+          value={attendance}
+          onChange={(e) => setAttendance(e.target.value)}
+        />
 
-      <input
-        name="attendance"
-        placeholder="Attendance %"
-        onChange={handleChange}
-        style={inputStyle}
-      />
+        <input
+          placeholder="Assignment Marks"
+          value={assignmentMarks}
+          onChange={(e) =>
+            setAssignmentMarks(e.target.value)
+          }
+        />
 
-      <input
-        type="date"
-        name="examDate"
-        onChange={handleChange}
-        style={inputStyle}
-      />
+        <input
+          placeholder="Internal Marks"
+          value={internalMarks}
+          onChange={(e) =>
+            setInternalMarks(e.target.value)
+          }
+        />
 
-      <button
-        onClick={saveRecord}
-        style={buttonStyle}
-      >
-        Save Record
-      </button>
+        <button onClick={saveRecord}>
+          💾 Save Record
+        </button>
+      </div>
     </div>
   );
 }
-
-const containerStyle = {
-  maxWidth: '700px',
-  margin: 'auto',
-  padding: '30px',
-  textAlign: 'center'
-};
-
-const headingStyle = {
-  marginBottom: '30px'
-};
-
-const inputStyle = {
-  width: '100%',
-  padding: '10px',
-  marginBottom: '15px'
-};
-
-const buttonStyle = {
-  padding: '10px 20px'
-};

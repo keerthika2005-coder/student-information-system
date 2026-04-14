@@ -1,58 +1,17 @@
 import React, { useState } from 'react';
 
 export default function Login({ onLogin }) {
-  const [isRegister, setIsRegister] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('student');
-
-  const handleRegister = () => {
-    const users =
-      JSON.parse(localStorage.getItem('users')) || [];
-
-    users.push({
-      username,
-      password,
-      role
-    });
-
-    localStorage.setItem(
-      'users',
-      JSON.stringify(users)
-    );
-
-    alert('Registration successful');
-
-    setUsername('');
-    setPassword('');
-    setIsRegister(false);
-  };
 
   const handleLogin = () => {
-    const users =
-      JSON.parse(localStorage.getItem('users')) || [];
-
     const demoUsers = [
-      {
-        username: 'admin',
-        password: '123',
-        role: 'admin'
-      },
-      {
-        username: 'staff',
-        password: '123',
-        role: 'staff'
-      },
-      {
-        username: 'student',
-        password: '123',
-        role: 'student'
-      }
+      { username: 'admin', password: '123', role: 'admin' },
+      { username: 'staff', password: '123', role: 'staff' },
+      { username: 'student', password: '123', role: 'student' }
     ];
 
-    const allUsers = [...demoUsers, ...users];
-
-    const foundUser = allUsers.find(
+    const foundUser = demoUsers.find(
       (user) =>
         user.username === username &&
         user.password === password
@@ -60,23 +19,19 @@ export default function Login({ onLogin }) {
 
     if (foundUser) {
       localStorage.setItem(
-        'role',
-        foundUser.role
+        'loggedUser',
+        JSON.stringify(foundUser)
       );
 
       onLogin(foundUser.role);
     } else {
-      alert('Invalid password');
+      alert('Invalid login');
     }
   };
 
   return (
     <div className="login-box">
-      <h2>
-        {isRegister
-          ? '📝 Register'
-          : '🔐 Login'}
-      </h2>
+      <h2>🎓 Learn Bridge Login</h2>
 
       <input
         placeholder="Username"
@@ -85,8 +40,6 @@ export default function Login({ onLogin }) {
           setUsername(e.target.value)
         }
       />
-      <br />
-      <br />
 
       <input
         type="password"
@@ -96,56 +49,14 @@ export default function Login({ onLogin }) {
           setPassword(e.target.value)
         }
       />
-      <br />
-      <br />
 
-      {isRegister && (
-        <>
-          <select
-            value={role}
-            onChange={(e) =>
-              setRole(e.target.value)
-            }
-          >
-            <option value="student">
-              Student
-            </option>
-            <option value="staff">
-              Staff
-            </option>
-            <option value="admin">
-              Admin
-            </option>
-          </select>
-          <br />
-          <br />
-        </>
-      )}
-
-      <button
-        onClick={
-          isRegister
-            ? handleRegister
-            : handleLogin
-        }
-      >
-        {isRegister
-          ? 'Register'
-          : 'Login'}
+      <button onClick={handleLogin}>
+        Login
       </button>
 
-      <br />
-      <br />
-
-      <button
-        onClick={() =>
-          setIsRegister(!isRegister)
-        }
-      >
-        {isRegister
-          ? 'Go to Login'
-          : 'Create Account'}
-      </button>
+      <p>Admin: admin / 123</p>
+      <p>Staff: staff / 123</p>
+      <p>Student: student / 123</p>
     </div>
   );
 }
