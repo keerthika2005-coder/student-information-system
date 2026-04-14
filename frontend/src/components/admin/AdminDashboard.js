@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
@@ -6,9 +6,9 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState({ totalStudents: 0, totalStaff: 0, totalCourses: 0 });
   const [students, setStudents] = useState([]);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+ useEffect(() => {
+  fetchData();
+}, [fetchData]);
 
   const API = axios.create({ baseURL: 'http://localhost:5000/api' });
   API.interceptors.request.use((req) => {
