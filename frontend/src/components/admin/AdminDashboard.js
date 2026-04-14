@@ -2,6 +2,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
+const API = axios.create({
+  baseURL: 'https://student-information-system-f2js.onrender.com/api'
+});
+
+API.interceptors.request.use((req) => {
+  req.headers['x-auth-token'] = localStorage.getItem('token');
+  return req;
+});
+
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
     totalStudents: 0,
@@ -10,15 +19,6 @@ const AdminDashboard = () => {
   });
 
   const [students, setStudents] = useState([]);
-
-  const API = axios.create({
-    baseURL: 'https://student-information-system-f2js.onrender.com/api'
-  });
-
-  API.interceptors.request.use((req) => {
-    req.headers['x-auth-token'] = localStorage.getItem('token');
-    return req;
-  });
 
   useEffect(() => {
     const fetchData = async () => {
