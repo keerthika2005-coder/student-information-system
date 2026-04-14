@@ -1,86 +1,105 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
 const API = axios.create({
   baseURL: 'https://student-information-system-f2js.onrender.com/api'
 });
 
-API.interceptors.request.use((req) => {
-  req.headers['x-auth-token'] = localStorage.getItem('token');
-  return req;
-});
-
-const StudentDashboard = () => {
+export default function StudentDashboard() {
+  const [rollNumber, setRollNumber] = useState('');
   const [student, setStudent] = useState(null);
 
-  useEffect(() => {
-    fetchStudentData();
-  }, []);
-
-  const fetchStudentData = async () => {
+  const fetchStudent = async () => {
     try {
-      const res = await API.get('/student/dashboard');
-      setStudent(res.data.student);
+      const res = await API.get(
+        `/student/${rollNumber}`
+      );
+
+      setStudent(res.data);
     } catch (error) {
-      console.error(error);
+      alert('Student not found');
     }
   };
 
-  const viewCertificate = () => {
-    alert(
-      `🎓 CERTIFICATE\n\n` +
-      `Name: ${student.name}\n` +
-      `Subject: ${student.subject}\n` +
-      `Grade: ${student.grade}`
-    );
-  };
-
-  if (!student) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div style={containerStyle}>
-      <h1>🎓 Learn Bridge Student Dashboard</h1>
+      <h1 style={headingStyle}>
+        🎓 Student Dashboard
+      </h1>
 
-      <div style={cardStyle}>
-        <p><b>Name:</b> {student.name}</p>
-        <p><b>Roll No:</b> {student.rollNumber}</p>
-        <p><b>Department:</b> {student.department}</p>
-        <p><b>Subject:</b> {student.subject}</p>
-        <p><b>Marks:</b> {student.marks}</p>
-        <p><b>Attendance:</b> {student.attendance}%</p>
-        <p><b>Grade:</b> {student.grade}</p>
-        <p><b>Exam Date:</b> {student.examDate}</p>
+      <input
+        placeholder="Enter Roll Number"
+        value={rollNumber}
+        onChange={(e) =>
+          setRollNumber(e.target.value)
+        }
+        style={inputStyle}
+      />
 
-        <button
-          onClick={viewCertificate}
-          style={buttonStyle}
-        >
-          🎓 View Certificate
-        </button>
-      </div>
+      <button
+        onClick={fetchStudent}
+        style={buttonStyle}
+      >
+        View Result
+      </button>
+
+      {student && (
+        <div style={cardStyle}>
+          <p>
+            <b>Name:</b> {student.name}
+          </p>
+          <p>
+            <b>Roll No:</b>{' '}
+            {student.rollNumber}
+          </p>
+          <p>
+            <b>Subject:</b>{' '}
+            {student.subject}
+          </p>
+          <p>
+            <b>Marks:</b> {student.marks}
+          </p>
+          <p>
+            <b>Attendance:</b>{' '}
+            {student.attendance}%
+          </p>
+          <p>
+            <b>Grade:</b> {student.grade}
+          </p>
+          <p>
+            <b>Exam Date:</b>{' '}
+            {student.examDate}
+          </p>
+        </div>
+      )}
     </div>
   );
-};
+}
 
 const containerStyle = {
-  maxWidth: '800px',
+  maxWidth: '700px',
   margin: 'auto',
-  padding: '30px'
+  padding: '30px',
+  textAlign: 'center'
+};
+
+const headingStyle = {
+  marginBottom: '30px'
+};
+
+const inputStyle = {
+  width: '100%',
+  padding: '10px',
+  marginBottom: '15px'
+};
+
+const buttonStyle = {
+  padding: '10px 20px',
+  marginBottom: '20px'
 };
 
 const cardStyle = {
   padding: '20px',
   boxShadow: '0 0 10px #ccc',
-  borderRadius: '12px',
-  background: '#fff'
+  borderRadius: '10px'
 };
-
-const buttonStyle = {
-  padding: '10px 20px',
-  marginTop: '20px',
-  cursor: 'pointer'
-};
-
-export default StudentDashboard;

@@ -10,7 +10,7 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
-const StaffDashboard = () => {
+export default function StaffDashboard() {
   const [formData, setFormData] = useState({
     rollNumber: '',
     subject: '',
@@ -26,7 +26,7 @@ const StaffDashboard = () => {
     });
   };
 
-  const calculateGrade = (marks) => {
+  const getGrade = (marks) => {
     const m = Number(marks);
 
     if (m >= 90) return 'A+';
@@ -39,22 +39,24 @@ const StaffDashboard = () => {
 
   const saveRecord = async () => {
     try {
-      const grade = calculateGrade(formData.marks);
+      const grade = getGrade(formData.marks);
 
       await API.post('/staff/update-student', {
         ...formData,
         grade
       });
 
-      alert('Student record updated');
+      alert('Student record updated successfully');
     } catch (error) {
-      console.error(error);
+      alert('Save failed');
     }
   };
 
   return (
     <div style={containerStyle}>
-      <h1>👩‍🏫 Learn Bridge Staff Dashboard</h1>
+      <h1 style={headingStyle}>
+        👩‍🏫 Staff Dashboard
+      </h1>
 
       <input
         name="rollNumber"
@@ -79,7 +81,7 @@ const StaffDashboard = () => {
 
       <input
         name="attendance"
-        placeholder="Attendance"
+        placeholder="Attendance %"
         onChange={handleChange}
         style={inputStyle}
       />
@@ -99,12 +101,17 @@ const StaffDashboard = () => {
       </button>
     </div>
   );
-};
+}
 
 const containerStyle = {
   maxWidth: '700px',
   margin: 'auto',
-  padding: '30px'
+  padding: '30px',
+  textAlign: 'center'
+};
+
+const headingStyle = {
+  marginBottom: '30px'
 };
 
 const inputStyle = {
@@ -114,8 +121,5 @@ const inputStyle = {
 };
 
 const buttonStyle = {
-  padding: '10px 20px',
-  cursor: 'pointer'
+  padding: '10px 20px'
 };
-
-export default StaffDashboard;
