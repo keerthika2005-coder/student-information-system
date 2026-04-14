@@ -1,173 +1,151 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 
-const API = axios.create({
-  baseURL: 'https://student-information-system-f2js.onrender.com/api'
-});
-
-const Login = ({ setToken, setUser }) => {
+export default function Login({ onLogin }) {
   const [isRegister, setIsRegister] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState('student');
 
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-    email: '',
-    fullName: '',
-    role: 'student'
-  });
+  const handleRegister = () => {
+    const users =
+      JSON.parse(localStorage.getItem('users')) || [];
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
+    users.push({
+      username,
+      password,
+      role
     });
+
+    localStorage.setItem(
+      'users',
+      JSON.stringify(users)
+    );
+
+    alert('Registration successful');
+
+    setUsername('');
+    setPassword('');
+    setIsRegister(false);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleLogin = () => {
+    const users =
+      JSON.parse(localStorage.getItem('users')) || [];
 
-    try {
-      const response = isRegister
-        ? await API.post('/auth/register', formData)
-        : await API.post('/auth/login', {
-            username: formData.username,
-            password: formData.password
-          });
+    const demoUsers = [
+      {
+        username: 'admin',
+        password: '123',
+        role: 'admin'
+      },
+      {
+        username: 'staff',
+        password: '123',
+        role: 'staff'
+      },
+      {
+        username: 'student',
+        password: '123',
+        role: 'student'
+      }
+    ];
 
-      localStorage.setItem('token', response.data.token);
+    const allUsers = [...demoUsers, ...users];
+
+    const foundUser = allUsers.find(
+      (user) =>
+        user.username === username &&
+        user.password === password
+    );
+
+    if (foundUser) {
       localStorage.setItem(
-        'user',
-        JSON.stringify(response.data.user)
+        'role',
+        foundUser.role
       );
 
-      setToken(response.data.token);
-      setUser(response.data.user);
-
-      alert(
-        isRegister
-          ? 'Registration successful'
-          : 'Login successful'
-      );
-    } catch (error) {
-      alert(
-        error.response?.data?.message ||
-          'Something went wrong'
-      );
+      onLogin(foundUser.role);
+    } else {
+      alert('Invalid password');
     }
   };
 
   return (
-    <div style={containerStyle}>
-      <div style={cardStyle}>
-        <h1>🎓 Learn Bridge</h1>
-        <h3>
-          {isRegister ? 'Register' : 'Login'}
-        </h3>
+    <div className="login-box">
+      <h2>
+        {isRegister
+          ? '📝 Register'
+          : '🔐 Login'}
+      </h2>
 
-        <form onSubmit={handleSubmit}>
-          <input
-            name="username"
-            placeholder="Username"
-            onChange={handleChange}
-            style={inputStyle}
-            required
-          />
+      <input
+        placeholder="Username"
+        value={username}
+        onChange={(e) =>
+          setUsername(e.target.value)
+        }
+      />
+      <br />
+      <br />
 
-          {isRegister && (
-            <>
-              <input
-                name="fullName"
-                placeholder="Full Name"
-                onChange={handleChange}
-                style={inputStyle}
-                required
-              />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) =>
+          setPassword(e.target.value)
+        }
+      />
+      <br />
+      <br />
 
-              <input
-                name="email"
-                placeholder="Email"
-                onChange={handleChange}
-                style={inputStyle}
-                required
-              />
-
-              <select
-                name="role"
-                onChange={handleChange}
-                style={inputStyle}
-              >
-                <option value="student">
-                  Student
-                </option>
-                <option value="staff">
-                  Staff
-                </option>
-                <option value="admin">
-                  Admin
-                </option>
-              </select>
-            </>
-          )}
-
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            onChange={handleChange}
-            style={inputStyle}
-            required
-          />
-
-          <button
-            type="submit"
-            style={buttonStyle}
+      {isRegister && (
+        <>
+          <select
+            value={role}
+            onChange={(e) =>
+              setRole(e.target.value)
+            }
           >
-            {isRegister ? 'Register' : 'Login'}
-          </button>
-        </form>
+            <option value="student">
+              Student
+            </option>
+            <option value="staff">
+              Staff
+            </option>
+            <option value="admin">
+              Admin
+            </option>
+          </select>
+          <br />
+          <br />
+        </>
+      )}
 
-        <p
-          onClick={() =>
-            setIsRegister(!isRegister)
-          }
-          style={{ cursor: 'pointer' }}
-        >
-          {isRegister
-            ? 'Go to Login'
-            : 'Create Account'}
-        </p>
-      </div>
+      <button
+        onClick={
+          isRegister
+            ? handleRegister
+            : handleLogin
+        }
+      >
+        {isRegister
+          ? 'Register'
+          : 'Login'}
+      </button>
+
+      <br />
+      <br />
+
+      <button
+        onClick={() =>
+          setIsRegister(!isRegister)
+        }
+      >
+        {isRegister
+          ? 'Go to Login'
+          : 'Create Account'}
+      </button>
     </div>
   );
-};
-
-const containerStyle = {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  minHeight: '100vh',
-  background: '#f4f6f8'
-};
-
-const cardStyle = {
-  width: '400px',
-  padding: '30px',
-  borderRadius: '12px',
-  boxShadow: '0 0 10px #ccc',
-  background: '#fff',
-  textAlign: 'center'
-};
-
-const inputStyle = {
-  width: '100%',
-  padding: '10px',
-  marginBottom: '15px'
-};
-
-const buttonStyle = {
-  width: '100%',
-  padding: '10px',
-  cursor: 'pointer'
-};
-
-export default Login;
+}

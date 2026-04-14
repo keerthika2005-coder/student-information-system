@@ -1,48 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import React, { useState } from 'react';
 import Login from './components/Login';
-import Navbar from './components/Navbar';
 import AdminDashboard from './components/admin/AdminDashboard';
 import StaffDashboard from './components/staff/StaffDashboard';
 import StudentDashboard from './components/student/StudentDashboard';
 import './App.css';
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem('token'));
-  const [user, setUser] = useState(null);
+  const [role, setRole] = useState(localStorage.getItem('role'));
 
-  useEffect(() => {
-    if (token) {
-      const userData = JSON.parse(localStorage.getItem('user') || '{}');
-      setUser(userData);
-    }
-  }, [token]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setToken(null);
-    setUser(null);
+  const handleLogin = (userRole) => {
+    localStorage.setItem('role', userRole);
+    setRole(userRole);
   };
 
-  if (!token) return <Login setToken={setToken} setUser={setUser} />;
+  const handleLogout = () => {
+    localStorage.removeItem('role');
+    setRole(null);
+  };
+
+  if (!role) {
+    return <Login onLogin={handleLogin} />;
+  }
 
   return (
-    <BrowserRouter>
-      <div className="app">
-        <Toaster position="top-right" />
-        <Navbar user={user} onLogout={handleLogout} />
-        <div className="container">
-          <Routes>
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/staff" element={<StaffDashboard />} />
-            <Route path="/student" element={<StudentDashboard />} />
-            <Route path="/" element={<Navigate to={user?.role === 'admin' ? '/admin' : user?.role === 'staff' ? '/staff' : '/student'} />} />
-          </Routes>
-        </div>
-      </div>
-    </BrowserRouter>
+    <div>
+      <button
+        onClick={handleLogout}
+        style={{
+          float: 'right',
+          margin: '20px',
+          padding: '10px'
+        }}
+      >
+        Logout
+      </button>
+
+      {role === 'admin' && <AdminDashboard />}
+      {role === 'staff' && <StaffDashboard />}
+      {role === 'student' && <StudentDashboard />}
+    </div>
   );
 }
 
