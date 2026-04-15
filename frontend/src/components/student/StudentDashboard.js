@@ -22,63 +22,56 @@ export default function StudentDashboard() {
     <div style={container}>
       <h1>🎓 Student Dashboard</h1>
 
-      <div style={searchBox}>
+      <div style={box}>
         <input
           style={input}
           placeholder="Enter Roll Number"
           value={rollNumber}
-          onChange={(e) =>
-            setRollNumber(e.target.value)
-          }
+          onChange={(e) => setRollNumber(e.target.value)}
         />
 
-        <button
-          style={button}
-          onClick={fetchStudent}
-        >
-          🔍 View Details
+        <button style={button} onClick={fetchStudent}>
+          🔍 View Result
         </button>
       </div>
 
       {student && (
         <div style={card}>
-          <h2>📘 Student Details</h2>
+          <h2>📘 Result Card</h2>
 
           <p><b>Name:</b> {student.name}</p>
           <p><b>Roll No:</b> {student.rollNumber}</p>
           <p><b>Department:</b> {student.department}</p>
           <p><b>Subject:</b> {student.subject}</p>
-          <p><b>Attendance:</b> {student.attendance}%</p>
 
-          <p>
-            <b>Assignment Marks:</b>{' '}
-            {student.assignmentMarks}
-          </p>
+          <hr />
 
-          <p>
-            <b>Internal Marks:</b>{' '}
-            {student.internalMarks}
-          </p>
+          <p><b>Attendance:</b> {student.attendance}</p>
+          <p><b>Assignment Marks:</b> {student.assignmentMarks}</p>
+          <p><b>Internal Marks:</b> {student.internalMarks}</p>
 
-          <p><b>Total:</b> {student.total}</p>
-          <p><b>Grade:</b> {student.grade}</p>
+          <hr />
+
+          <h2>🎯 Total: {student.total}</h2>
+          <h2>🏆 Grade: {student.grade}</h2>
         </div>
       )}
     </div>
   );
 }
 
+/* styles */
 const container = {
   width: '80%',
   margin: '30px auto',
   textAlign: 'center'
 };
 
-const searchBox = {
-  padding: '25px',
+const box = {
+  padding: '20px',
   boxShadow: '0 2px 10px #ccc',
   borderRadius: '15px',
-  marginBottom: '30px'
+  marginBottom: '20px'
 };
 
 const input = {
