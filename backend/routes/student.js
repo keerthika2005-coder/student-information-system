@@ -1,17 +1,40 @@
 ﻿const mongoose = require('mongoose');
 
 const studentSchema = new mongoose.Schema({
-  name: String,
-  rollNumber: String,
+  name: {
+    type: String,
+    required: true
+  },
+  rollNumber: {
+    type: String,
+    required: true,
+    unique: true
+  },
   department: String,
   subject: String,
-  attendance: String,
-  assignmentMarks: String,
-  internalMarks: String,
-  total: Number,
-  grade: String
+  attendance: {
+    type: String,
+    default: ''
+  },
+  assignmentMarks: {
+    type: String,
+    default: ''
+  },
+  internalMarks: {
+    type: String,
+    default: ''
+  },
+  total: {
+    type: Number,
+    default: 0
+  },
+  grade: {
+    type: String,
+    default: ''
+  }
 });
 
-module.exports =
-  mongoose.models.Student ||
-  mongoose.model('Student', studentSchema);
+// VERY IMPORTANT
+const Student = mongoose.model('Student', studentSchema);
+
+module.exports = Student;
