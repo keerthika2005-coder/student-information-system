@@ -22,7 +22,7 @@ export default function AdminDashboard() {
 
   return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
-      <h2>🛠️ Admin Dashboard</h2>
+      <h2>🛠️ Learn Bridge Admin Dashboard</h2>
 
       {students.length === 0 ? (
         <p>No student data found</p>
@@ -35,7 +35,8 @@ export default function AdminDashboard() {
               padding: '15px',
               margin: '10px auto',
               width: '60%',
-              borderRadius: '10px'
+              borderRadius: '10px',
+              boxShadow: '0 0 10px #ddd'
             }}
           >
             <p><b>Name:</b> {student.name}</p>
