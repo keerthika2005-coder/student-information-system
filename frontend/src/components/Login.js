@@ -5,95 +5,81 @@ export default function Login({ onLogin }) {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    const demoUsers = [
-      { username: 'admin', password: '123', role: 'admin' },
-      { username: 'staff', password: '123', role: 'staff' },
-      { username: 'student', password: '123', role: 'student' }
-    ];
-
-    const foundUser = demoUsers.find(
-      (user) =>
-        user.username === username &&
-        user.password === password
-    );
-
-    if (foundUser) {
-      localStorage.setItem('role', foundUser.role);
-      onLogin(foundUser.role);
+    if (username === 'admin' && password === '123') {
+      onLogin('admin');
+    } else if (username === 'staff' && password === '123') {
+      onLogin('staff');
+    } else if (username === 'student' && password === '123') {
+      onLogin('student');
     } else {
-      alert('Invalid Username or Password');
+      alert('Invalid login');
     }
   };
 
   return (
-    <div style={containerStyle}>
-      <div style={boxStyle}>
-        <h1 style={titleStyle}>🎓 Learn Bridge</h1>
-        <h3>Student Information System</h3>
+    <div style={container}>
+      <div style={box}>
+        <h1>🎓 Learn Bridge Login</h1>
 
         <input
-          style={inputStyle}
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          style={input}
         />
 
         <input
-          style={inputStyle}
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          style={input}
         />
 
-        <button style={buttonStyle} onClick={handleLogin}>
-          🔐 Login
+        <button onClick={handleLogin} style={button}>
+          Login
         </button>
 
-        <div style={{ marginTop: '20px' }}>
-          <p><b>Demo Login</b></p>
-          <p>Admin → admin / 123</p>
-          <p>Staff → staff / 123</p>
-          <p>Student → student / 123</p>
-        </div>
+        <p>Admin: admin / 123</p>
+        <p>Staff: staff / 123</p>
+        <p>Student: student / 123</p>
       </div>
     </div>
   );
 }
 
-const containerStyle = {
+const container = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   height: '100vh',
-  background: '#f4f7fc'
+  background: '#f4f6f9'
 };
 
-const boxStyle = {
-  width: '380px',
-  padding: '30px',
-  textAlign: 'center',
+const box = {
+  width: '400px',
+  padding: '40px',
   borderRadius: '15px',
+  boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
   background: 'white',
-  boxShadow: '0 2px 10px #ccc'
+  textAlign: 'center'
 };
 
-const titleStyle = {
-  marginBottom: '10px'
-};
-
-const inputStyle = {
+const input = {
   width: '100%',
   padding: '12px',
-  marginBottom: '15px',
+  margin: '10px 0',
   borderRadius: '8px',
   border: '1px solid #ccc'
 };
 
-const buttonStyle = {
+const button = {
   width: '100%',
   padding: '12px',
   border: 'none',
   borderRadius: '8px',
+  background: '#4CAF50',
+  color: 'white',
+  fontSize: '16px',
   cursor: 'pointer'
 };
