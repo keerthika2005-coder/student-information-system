@@ -3,8 +3,12 @@ import axios from "axios";
 
 const API = process.env.REACT_APP_API_URL;
 
+const DEPARTMENTS = ["CSE", "IT", "ECE"];
+const SEMESTERS = ["1", "2", "3", "4", "5", "6"];
+
 export default function StaffDashboard() {
-  const [subject, setSubject] = useState("");
+  const [department, setDepartment] = useState("");
+  const [semester, setSemester] = useState("");
   const [students, setStudents] = useState([]);
 
   const [rollNumber, setRollNumber] = useState("");
@@ -12,21 +16,20 @@ export default function StaffDashboard() {
   const [assignmentMarks, setAssignmentMarks] = useState("");
   const [internalMarks, setInternalMarks] = useState("");
 
-  // ✅ LOAD STUDENTS BY SUBJECT
+  // ✅ LOAD STUDENTS
   const loadStudents = async () => {
     try {
       const res = await axios.get(
-        `${API}/api/staff/students/${subject}`
+        `${API}/api/staff/students?department=${department}&semester=${semester}`
       );
 
       setStudents(res.data);
     } catch (err) {
-      console.log(err);
       alert("❌ Failed to load students");
     }
   };
 
-  // ✅ UPDATE MARKS BY ROLL NUMBER
+  // ✅ UPDATE MARKS
   const updateMarks = async () => {
     try {
       await axios.put(
@@ -38,15 +41,8 @@ export default function StaffDashboard() {
         }
       );
 
-      alert("✅ Marks Updated Successfully");
-
-      // clear inputs
-      setRollNumber("");
-      setAttendance("");
-      setAssignmentMarks("");
-      setInternalMarks("");
-    } catch (err) {
-      console.log(err);
+      alert("✅ Updated Successfully");
+    } catch {
       alert("❌ Update failed");
     }
   };
@@ -55,14 +51,29 @@ export default function StaffDashboard() {
     <div style={styles.container}>
       <h1>👨‍🏫 Staff Dashboard</h1>
 
-      {/* SUBJECT INPUT */}
+      {/* FILTER */}
       <div style={styles.card}>
-        <input
+        <select
           style={styles.input}
-          placeholder="Enter Subject (Maths, CS...)"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-        />
+          value={department}
+          onChange={(e) => setDepartment(e.target.value)}
+        >
+          <option value="">Select Department</option>
+          {DEPARTMENTS.map((d, i) => (
+            <option key={i} value={d}>{d}</option>
+          ))}
+        </select>
+
+        <select
+          style={styles.input}
+          value={semester}
+          onChange={(e) => setSemester(e.target.value)}
+        >
+          <option value="">Select Semester</option>
+          {SEMESTERS.map((s, i) => (
+            <option key={i} value={s}>{s}</option>
+          ))}
+        </select>
 
         <button style={styles.button} onClick={loadStudents}>
           Load Students
@@ -75,10 +86,10 @@ export default function StaffDashboard() {
           <p>No students found</p>
         ) : (
           students.map((s) => (
-            <div key={s._id} style={styles.studentCard}>
-              <p><b>Name:</b> {s.name}</p>
-              <p><b>Roll:</b> {s.rollNumber}</p>
-              <p><b>Subject:</b> {s.subject}</p>
+            <div key={s._id} style={styles.cardBox}>
+              <p><b>{s.name}</b></p>
+              <p>{s.rollNumber}</p>
+              <p>{s.department} - Sem {s.semester}</p>
             </div>
           ))
         )}
@@ -117,21 +128,16 @@ export default function StaffDashboard() {
         />
 
         <button style={styles.button} onClick={updateMarks}>
-          Save Marks
+          Save
         </button>
       </div>
     </div>
   );
 }
 
-/* ================= CSS ================= */
+/* CSS */
 const styles = {
-  container: {
-    width: "80%",
-    margin: "auto",
-    textAlign: "center",
-    fontFamily: "Arial"
-  },
+  container: { width: "80%", margin: "auto", textAlign: "center" },
 
   card: {
     background: "#fff",
@@ -155,8 +161,7 @@ const styles = {
     background: "#4CAF50",
     color: "white",
     border: "none",
-    borderRadius: "8px",
-    cursor: "pointer"
+    borderRadius: "8px"
   },
 
   grid: {
@@ -165,7 +170,7 @@ const styles = {
     justifyContent: "center"
   },
 
-  studentCard: {
+  cardBox: {
     background: "#fff",
     margin: "10px",
     padding: "15px",

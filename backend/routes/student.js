@@ -1,17 +1,22 @@
-﻿const mongoose = require('mongoose');
+﻿const express = require("express");
+const router = express.Router();
+const Student = require("../models/Student");
 
-const studentSchema = new mongoose.Schema({
-  name: String,
-  rollNumber: String,
-  department: String,
-  subject: String,
-  attendance: String,
-  assignmentMarks: String,
-  internalMarks: String,
-  total: Number,
-  grade: String
+// ✅ GET STUDENT RESULT BY ROLL NUMBER
+router.get("/:rollNumber", async (req, res) => {
+  try {
+    const student = await Student.findOne({
+      rollNumber: req.params.rollNumber
+    });
+
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.json(student);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// ✅ Prevent OverwriteModelError in Render / hot reload
-module.exports =
-  mongoose.models.Student || mongoose.model('Student', studentSchema);
+module.exports = router;

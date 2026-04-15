@@ -1,17 +1,18 @@
-﻿const mongoose = require('mongoose');
+﻿const mongoose = require("mongoose");
 
 const studentSchema = new mongoose.Schema({
   name: String,
-  rollNumber: String,
+  rollNumber: { type: String, unique: true },
   department: String,
+  semester: String,   // ✅ NEW
   subject: String,
-  attendance: String,
-  assignmentMarks: String,
-  internalMarks: String,
+
+  attendance: Number,
+  assignmentMarks: Number,
+  internalMarks: Number,
+
   total: Number,
   grade: String
 });
 
-// ✅ Prevent OverwriteModelError in Render / hot reload
-module.exports =
-  mongoose.models.Student || mongoose.model('Student', studentSchema);
+module.exports = mongoose.model("Student", studentSchema);

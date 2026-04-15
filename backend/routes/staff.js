@@ -1,36 +1,45 @@
-﻿const express = require('express');
+﻿const express = require("express");
 const router = express.Router();
-const Student = require('../models/Student');
+const Student = require("../models/Student");
 
-// UPDATE marks by roll number
-router.put('/update-marks/:rollNumber', async (req, res) => {
+// ✅ FILTER BY department + semester
+router.get("/students", async (req, res) => {
   try {
-    const { subject, attendance, assignmentMarks, internalMarks } = req.body;
+    const { department, semester } = req.query;
 
-    const total = Number(assignmentMarks) + Number(internalMarks);
+    const students = await Student.find({
+      department,
+      semester
+    });
 
-    let grade = '';
-    if (total >= 90) grade = 'A+';
-    else if (total >= 80) grade = 'A';
-    else if (total >= 70) grade = 'B+';
-    else if (total >= 60) grade = 'B';
-    else if (total >= 50) grade = 'C';
-    else grade = 'F';
+    res.json(students);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-    const student = await Student.findOneAndUpdate(
+// ✅ UPDATE MARKS
+router.put("/update/:rollNumber", async (req, res) => {
+  try {
+    const { attendance, assignmentMarks, internalMarks } = req.body;
+
+    const total =
+      Number(attendance) +
+      Number(assignmentMarks) +
+      Number(internalMarks);
+
+    let grade = "F";
+    if (total >= 90) grade = "A";
+    else if (total >= 75) grade = "B";
+    else if (total >= 60) grade = "C";
+
+    const updated = await Student.findOneAndUpdate(
       { rollNumber: req.params.rollNumber },
-      {
-        subject,
-        attendance,
-        assignmentMarks,
-        internalMarks,
-        total,
-        grade
-      },
+      { attendance, assignmentMarks, internalMarks, total, grade },
       { new: true }
     );
 
-    res.json(student);
+    res.json(updated);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

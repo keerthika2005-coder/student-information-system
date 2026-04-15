@@ -41,9 +41,10 @@ export default function StudentDashboard() {
         <div style={styles.resultCard}>
           <h2>{student.name}</h2>
 
-          <p>Roll No: {student.rollNumber}</p>
-          <p>Department: {student.department}</p>
-          <p>Subject: {student.subject}</p>
+          <p><b>Roll:</b> {student.rollNumber}</p>
+          <p><b>Department:</b> {student.department}</p>
+          <p><b>Semester:</b> {student.semester}</p>
+          <p><b>Subject:</b> {student.subject}</p>
 
           <hr />
 
@@ -92,8 +93,7 @@ const styles = {
     background: "#2196F3",
     color: "white",
     border: "none",
-    borderRadius: "8px",
-    cursor: "pointer"
+    borderRadius: "8px"
   },
 
   resultCard: {
