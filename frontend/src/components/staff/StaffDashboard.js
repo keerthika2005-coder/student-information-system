@@ -1,20 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 export default function StaffDashboard() {
-  const [students, setStudents] = useState([]);
   const [subject, setSubject] = useState('');
-  const [studentName, setStudentName] = useState('');
+  const [rollNo, setRollNo] = useState('');
   const [attendance, setAttendance] = useState('');
-  const [assignmentMarks, setAssignmentMarks] = useState('');
-  const [internalMarks, setInternalMarks] = useState('');
+  const [assignment, setAssignment] = useState('');
+  const [internal, setInternal] = useState('');
 
-  useEffect(() => {
-    const savedStudents =
-      JSON.parse(localStorage.getItem('students')) || [];
-    setStudents(savedStudents);
-  }, []);
+  const calculateGrade = () => {
+    const total = Number(assignment) + Number(internal);
 
-  const calculateGrade = (total) => {
     if (total >= 90) return 'A+';
     if (total >= 80) return 'A';
     if (total >= 70) return 'B+';
@@ -23,91 +18,59 @@ export default function StaffDashboard() {
     return 'F';
   };
 
-  const saveRecord = () => {
-    const total =
-      Number(assignmentMarks) + Number(internalMarks);
-
-    const grade = calculateGrade(total);
-
-    const updatedStudents = students.map((student) =>
-      student.name === studentName
-        ? {
-            ...student,
-            subject,
-            attendance,
-            assignmentMarks,
-            internalMarks,
-            total,
-            grade
-          }
-        : student
-    );
-
-    localStorage.setItem(
-      'students',
-      JSON.stringify(updatedStudents)
-    );
-
-    setStudents(updatedStudents);
-
-    alert('Student record saved successfully');
-
-    setSubject('');
-    setStudentName('');
-    setAttendance('');
-    setAssignmentMarks('');
-    setInternalMarks('');
+  const saveData = () => {
+    alert(`Grade: ${calculateGrade()}`);
   };
 
   return (
-    <div className="dashboard-container">
-      <h2 className="dashboard-title">👩‍🏫 Staff Dashboard</h2>
+    <div style={containerStyle}>
+      <h1 style={titleStyle}>👩‍🏫 Staff Dashboard</h1>
 
-      <div className="form-box">
-        <input
-          placeholder="Subject"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-        />
+      <div style={cardStyle}>
+        <input style={inputStyle} placeholder="Subject" onChange={(e) => setSubject(e.target.value)} />
+        <input style={inputStyle} placeholder="Roll Number" onChange={(e) => setRollNo(e.target.value)} />
+        <input style={inputStyle} placeholder="Attendance %" onChange={(e) => setAttendance(e.target.value)} />
+        <input style={inputStyle} placeholder="Assignment Marks" onChange={(e) => setAssignment(e.target.value)} />
+        <input style={inputStyle} placeholder="Internal Marks" onChange={(e) => setInternal(e.target.value)} />
 
-        <select
-          value={studentName}
-          onChange={(e) => setStudentName(e.target.value)}
-        >
-          <option value="">Select Student</option>
-          {students.map((student, index) => (
-            <option key={index} value={student.name}>
-              {student.name}
-            </option>
-          ))}
-        </select>
-
-        <input
-          placeholder="Attendance %"
-          value={attendance}
-          onChange={(e) => setAttendance(e.target.value)}
-        />
-
-        <input
-          placeholder="Assignment Marks"
-          value={assignmentMarks}
-          onChange={(e) =>
-            setAssignmentMarks(e.target.value)
-          }
-        />
-
-        <input
-          placeholder="Internal Marks"
-          value={internalMarks}
-          onChange={(e) =>
-            setInternalMarks(e.target.value)
-          }
-        />
-
-        <button onClick={saveRecord}>
+        <button style={buttonStyle} onClick={saveData}>
           💾 Save Record
         </button>
       </div>
     </div>
   );
 }
+
+const containerStyle = {
+  textAlign: 'center',
+  padding: '30px',
+  minHeight: '100vh',
+  background: '#f4f7fc'
+};
+
+const titleStyle = {
+  marginBottom: '30px'
+};
+
+const cardStyle = {
+  width: '400px',
+  margin: 'auto',
+  padding: '25px',
+  borderRadius: '15px',
+  background: 'white',
+  boxShadow: '0 2px 10px #ccc'
+};
+
+const inputStyle = {
+  width: '100%',
+  padding: '10px',
+  marginBottom: '15px',
+  borderRadius: '8px'
+};
+
+const buttonStyle = {
+  padding: '10px 20px',
+  borderRadius: '8px',
+  border: 'none',
+  cursor: 'pointer'
+};
