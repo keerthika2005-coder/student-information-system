@@ -2,7 +2,7 @@
 const router = express.Router();
 const Student = require("../models/Student");
 
-// ✅ GET ALL STUDENTS (NO FILTER)
+// GET ALL STUDENTS
 router.get("/students", async (req, res) => {
   try {
     const students = await Student.find({});
@@ -12,7 +12,7 @@ router.get("/students", async (req, res) => {
   }
 });
 
-// ✅ UPDATE MARKS
+// UPDATE MARKS
 router.put("/update/:rollNumber", async (req, res) => {
   try {
     const { attendance, assignmentMarks, internalMarks } = req.body;

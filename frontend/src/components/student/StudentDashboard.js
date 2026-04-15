@@ -7,16 +7,12 @@ export default function StudentDashboard() {
   const [rollNumber, setRollNumber] = useState("");
   const [student, setStudent] = useState(null);
 
-  const fetchStudent = async () => {
+  const getResult = async () => {
     try {
-      const res = await axios.get(
-        `${API}/api/student/${rollNumber}`
-      );
-
+      const res = await axios.get(`${API}/api/student/${rollNumber}`);
       setStudent(res.data);
-    } catch (err) {
-      alert("❌ Student not found");
-      setStudent(null);
+    } catch {
+      alert("❌ Not found");
     }
   };
 
@@ -28,19 +24,17 @@ export default function StudentDashboard() {
         <input
           style={styles.input}
           placeholder="Enter Roll Number"
-          value={rollNumber}
           onChange={(e) => setRollNumber(e.target.value)}
         />
 
-        <button style={styles.button} onClick={fetchStudent}>
+        <button style={styles.button} onClick={getResult}>
           View Result
         </button>
       </div>
 
       {student && (
-        <div style={styles.resultCard}>
+        <div style={styles.card}>
           <h2>{student.name}</h2>
-
           <p>Roll: {student.rollNumber}</p>
           <p>Department: {student.department}</p>
           <p>Subject: {student.subject}</p>
@@ -80,7 +74,7 @@ const styles = {
   },
 
   input: {
-    width: "70%",
+    width: "80%",
     padding: "10px",
     margin: "10px",
     borderRadius: "8px",
@@ -92,16 +86,7 @@ const styles = {
     background: "#2196F3",
     color: "white",
     border: "none",
-    borderRadius: "8px"
-  },
-
-  resultCard: {
-    background: "#fff",
-    padding: "25px",
-    width: "60%",
-    margin: "20px auto",
-    borderRadius: "12px",
-    boxShadow: "0 2px 10px #aaa",
-    textAlign: "left"
+    borderRadius: "8px",
+    cursor: "pointer"
   }
 };
