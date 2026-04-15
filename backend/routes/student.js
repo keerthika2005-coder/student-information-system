@@ -1,40 +1,17 @@
 ﻿const mongoose = require('mongoose');
 
 const studentSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true
-  },
-  rollNumber: {
-    type: String,
-    required: true,
-    unique: true
-  },
+  name: String,
+  rollNumber: String,
   department: String,
   subject: String,
-  attendance: {
-    type: String,
-    default: ''
-  },
-  assignmentMarks: {
-    type: String,
-    default: ''
-  },
-  internalMarks: {
-    type: String,
-    default: ''
-  },
-  total: {
-    type: Number,
-    default: 0
-  },
-  grade: {
-    type: String,
-    default: ''
-  }
+  attendance: String,
+  assignmentMarks: String,
+  internalMarks: String,
+  total: Number,
+  grade: String
 });
 
-// VERY IMPORTANT
-const Student = mongoose.model('Student', studentSchema);
-
-module.exports = Student;
+// ✅ Prevent OverwriteModelError in Render / hot reload
+module.exports =
+  mongoose.models.Student || mongoose.model('Student', studentSchema);

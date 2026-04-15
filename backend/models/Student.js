@@ -12,6 +12,6 @@ const studentSchema = new mongoose.Schema({
   grade: String
 });
 
-const Student = mongoose.model('Student', studentSchema);
-
-module.exports = Student;
+// ✅ Prevent OverwriteModelError in Render / hot reload
+module.exports =
+  mongoose.models.Student || mongoose.model('Student', studentSchema);
