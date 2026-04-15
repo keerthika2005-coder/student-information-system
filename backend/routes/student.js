@@ -1,13 +1,22 @@
-﻿const express = require('express');
-const router = express.Router();
-const Student = require('../models/Student');
+﻿const mongoose = require('mongoose');
 
-router.get('/:rollNumber', async (req, res) => {
-  const student = await Student.findOne({
-    rollNumber: req.params.rollNumber
-  });
-
-  res.json(student);
+const studentSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  rollNumber: {
+    type: String,
+    required: true
+  },
+  department: {
+    type: String,
+    required: true
+  },
+  subject: {
+    type: String,
+    required: true
+  }
 });
 
-module.exports = router;
+module.exports = mongoose.model('Student', studentSchema, 'students');
