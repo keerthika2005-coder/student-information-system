@@ -2,38 +2,38 @@
 const router = express.Router();
 const Student = require('../models/Student');
 
+// UPDATE marks by roll number
 router.put('/update-marks/:rollNumber', async (req, res) => {
-  const { internal, assignment, attendance } = req.body;
+  try {
+    const { subject, attendance, assignmentMarks, internalMarks } = req.body;
 
-  const total =
-    Number(internal) + Number(assignment);
+    const total = Number(assignmentMarks) + Number(internalMarks);
 
-  let grade = '';
+    let grade = '';
+    if (total >= 90) grade = 'A+';
+    else if (total >= 80) grade = 'A';
+    else if (total >= 70) grade = 'B+';
+    else if (total >= 60) grade = 'B';
+    else if (total >= 50) grade = 'C';
+    else grade = 'F';
 
-  if (total >= 90) grade = 'A+';
-  else if (total >= 80) grade = 'A';
-  else if (total >= 70) grade = 'B+';
-  else if (total >= 60) grade = 'B';
-  else if (total >= 50) grade = 'C';
-  else grade = 'RA';
-
-  const result =
-    grade === 'RA' ? 'Fail' : 'Pass';
-
-  const student =
-    await Student.findOneAndUpdate(
+    const student = await Student.findOneAndUpdate(
       { rollNumber: req.params.rollNumber },
       {
-        internal,
-        assignment,
+        subject,
         attendance,
-        grade,
-        result
+        assignmentMarks,
+        internalMarks,
+        total,
+        grade
       },
       { new: true }
     );
 
-  res.json(student);
+    res.json(student);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

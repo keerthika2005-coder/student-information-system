@@ -1,76 +1,53 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 export default function StaffDashboard() {
+  const [rollNumber, setRollNumber] = useState('');
   const [subject, setSubject] = useState('');
-  const [rollNo, setRollNo] = useState('');
   const [attendance, setAttendance] = useState('');
-  const [assignment, setAssignment] = useState('');
-  const [internal, setInternal] = useState('');
+  const [assignmentMarks, setAssignmentMarks] = useState('');
+  const [internalMarks, setInternalMarks] = useState('');
 
-  const calculateGrade = () => {
-    const total = Number(assignment) + Number(internal);
+  const saveData = async () => {
+    try {
+      await axios.put(
+        `https://student-information-system-f2js.onrender.com/api/staff/update-marks/${rollNumber}`,
+        {
+          subject,
+          attendance,
+          assignmentMarks,
+          internalMarks
+        }
+      );
 
-    if (total >= 90) return 'A+';
-    if (total >= 80) return 'A';
-    if (total >= 70) return 'B+';
-    if (total >= 60) return 'B';
-    if (total >= 50) return 'C';
-    return 'F';
-  };
+      alert('✅ Data Saved Successfully');
 
-  const saveData = () => {
-    alert(`Grade: ${calculateGrade()}`);
+      setRollNumber('');
+      setSubject('');
+      setAttendance('');
+      setAssignmentMarks('');
+      setInternalMarks('');
+    } catch (err) {
+      alert('❌ Error saving data');
+    }
   };
 
   return (
-    <div style={containerStyle}>
-      <h1 style={titleStyle}>👩‍🏫 Staff Dashboard</h1>
+    <div style={container}>
+      <h1>👩‍🏫 Staff Dashboard</h1>
 
-      <div style={cardStyle}>
-        <input style={inputStyle} placeholder="Subject" onChange={(e) => setSubject(e.target.value)} />
-        <input style={inputStyle} placeholder="Roll Number" onChange={(e) => setRollNo(e.target.value)} />
-        <input style={inputStyle} placeholder="Attendance %" onChange={(e) => setAttendance(e.target.value)} />
-        <input style={inputStyle} placeholder="Assignment Marks" onChange={(e) => setAssignment(e.target.value)} />
-        <input style={inputStyle} placeholder="Internal Marks" onChange={(e) => setInternal(e.target.value)} />
+      <input placeholder="Roll Number" value={rollNumber} onChange={(e) => setRollNumber(e.target.value)} />
+      <input placeholder="Subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
+      <input placeholder="Attendance %" value={attendance} onChange={(e) => setAttendance(e.target.value)} />
+      <input placeholder="Assignment Marks" value={assignmentMarks} onChange={(e) => setAssignmentMarks(e.target.value)} />
+      <input placeholder="Internal Marks" value={internalMarks} onChange={(e) => setInternalMarks(e.target.value)} />
 
-        <button style={buttonStyle} onClick={saveData}>
-          💾 Save Record
-        </button>
-      </div>
+      <button onClick={saveData}>💾 Save</button>
     </div>
   );
 }
 
-const containerStyle = {
+const container = {
   textAlign: 'center',
-  padding: '30px',
-  minHeight: '100vh',
-  background: '#f4f7fc'
-};
-
-const titleStyle = {
-  marginBottom: '30px'
-};
-
-const cardStyle = {
-  width: '400px',
-  margin: 'auto',
-  padding: '25px',
-  borderRadius: '15px',
-  background: 'white',
-  boxShadow: '0 2px 10px #ccc'
-};
-
-const inputStyle = {
-  width: '100%',
-  padding: '10px',
-  marginBottom: '15px',
-  borderRadius: '8px'
-};
-
-const buttonStyle = {
-  padding: '10px 20px',
-  borderRadius: '8px',
-  border: 'none',
-  cursor: 'pointer'
+  padding: '30px'
 };
