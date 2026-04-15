@@ -1,9 +1,10 @@
-﻿const express = require('express');
+const express = require('express');
 const router = express.Router();
 const Student = require('../models/Student');
 
-router.put('/update-marks/:rollNumber', async (req, res) => {
-  const { internal, assignment, attendance } = req.body;
+router.put('/update/:rollNumber', async (req, res) => {
+  const { internal, assignment, attendance } =
+    req.body;
 
   const total =
     Number(internal) + Number(assignment);
