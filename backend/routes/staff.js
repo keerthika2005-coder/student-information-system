@@ -2,18 +2,10 @@
 const router = express.Router();
 const Student = require("../models/Student");
 
-// ✅ FILTER ONLY BY department + subject
+// ✅ GET ALL STUDENTS (NO FILTER)
 router.get("/students", async (req, res) => {
   try {
-    const { department, subject } = req.query;
-
-    const filter = {};
-
-    if (department) filter.department = department;
-    if (subject) filter.subject = subject;
-
-    const students = await Student.find(filter);
-
+    const students = await Student.find({});
     res.json(students);
   } catch (err) {
     res.status(500).json({ error: err.message });

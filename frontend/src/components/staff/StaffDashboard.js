@@ -1,34 +1,54 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const API = process.env.REACT_APP_API_URL;
 
 const DEPARTMENTS = ["CSE", "IT", "ECE"];
-const SUBJECTS = ["Java", "Python", "AI", "Networks"];
+const SUBJECTS = ["Java", "Python", "AI", "DBMS"];
 
 export default function StaffDashboard() {
+  const [students, setStudents] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+
   const [department, setDepartment] = useState("");
   const [subject, setSubject] = useState("");
-  const [students, setStudents] = useState([]);
 
   const [rollNumber, setRollNumber] = useState("");
   const [attendance, setAttendance] = useState("");
   const [assignmentMarks, setAssignmentMarks] = useState("");
   const [internalMarks, setInternalMarks] = useState("");
 
-  // ✅ LOAD STUDENTS
+  // ✅ LOAD ALL STUDENTS ONCE
+  useEffect(() => {
+    loadStudents();
+  }, []);
+
   const loadStudents = async () => {
     try {
-      const res = await axios.get(
-        `${API}/api/staff/students?department=${department}&subject=${subject}`
-      );
+      const res = await axios.get(`${API}/api/staff/students`);
       setStudents(res.data);
+      setFiltered(res.data);
     } catch {
       alert("❌ Failed to load students");
     }
   };
 
-  // ✅ UPDATE MARKS
+  // ✅ FILTER IN FRONTEND (FAST UI)
+  const handleFilter = (dept, sub) => {
+    let result = students;
+
+    if (dept) {
+      result = result.filter((s) => s.department === dept);
+    }
+
+    if (sub) {
+      result = result.filter((s) => s.subject === sub);
+    }
+
+    setFiltered(result);
+  };
+
+  // UPDATE MARKS
   const updateMarks = async () => {
     try {
       await axios.put(
@@ -36,7 +56,8 @@ export default function StaffDashboard() {
         { attendance, assignmentMarks, internalMarks }
       );
 
-      alert("✅ Marks Updated");
+      alert("✅ Updated");
+      loadStudents();
     } catch {
       alert("❌ Update failed");
     }
@@ -51,44 +72,42 @@ export default function StaffDashboard() {
         <select
           style={styles.input}
           value={department}
-          onChange={(e) => setDepartment(e.target.value)}
+          onChange={(e) => {
+            setDepartment(e.target.value);
+            handleFilter(e.target.value, subject);
+          }}
         >
-          <option value="">Select Department</option>
+          <option value="">All Departments</option>
           {DEPARTMENTS.map((d) => (
-            <option key={d} value={d}>{d}</option>
+            <option key={d}>{d}</option>
           ))}
         </select>
 
         <select
           style={styles.input}
           value={subject}
-          onChange={(e) => setSubject(e.target.value)}
+          onChange={(e) => {
+            setSubject(e.target.value);
+            handleFilter(department, e.target.value);
+          }}
         >
-          <option value="">Select Subject</option>
+          <option value="">All Subjects</option>
           {SUBJECTS.map((s) => (
-            <option key={s} value={s}>{s}</option>
+            <option key={s}>{s}</option>
           ))}
         </select>
-
-        <button style={styles.button} onClick={loadStudents}>
-          Load Students
-        </button>
       </div>
 
       {/* STUDENT LIST */}
       <div style={styles.grid}>
-        {students.length === 0 ? (
-          <p>No students found</p>
-        ) : (
-          students.map((s) => (
-            <div key={s._id} style={styles.cardBox}>
-              <h3>{s.name}</h3>
-              <p>{s.rollNumber}</p>
-              <p>{s.department}</p>
-              <p>{s.subject}</p>
-            </div>
-          ))
-        )}
+        {filtered.map((s) => (
+          <div key={s._id} style={styles.cardBox}>
+            <h3>{s.name}</h3>
+            <p>{s.rollNumber}</p>
+            <p>{s.department}</p>
+            <p>{s.subject}</p>
+          </div>
+        ))}
       </div>
 
       {/* UPDATE MARKS */}
@@ -98,33 +117,29 @@ export default function StaffDashboard() {
         <input
           style={styles.input}
           placeholder="Roll Number"
-          value={rollNumber}
           onChange={(e) => setRollNumber(e.target.value)}
         />
 
         <input
           style={styles.input}
           placeholder="Attendance"
-          value={attendance}
           onChange={(e) => setAttendance(e.target.value)}
         />
 
         <input
           style={styles.input}
-          placeholder="Assignment Marks"
-          value={assignmentMarks}
+          placeholder="Assignment"
           onChange={(e) => setAssignmentMarks(e.target.value)}
         />
 
         <input
           style={styles.input}
-          placeholder="Internal Marks"
-          value={internalMarks}
+          placeholder="Internal"
           onChange={(e) => setInternalMarks(e.target.value)}
         />
 
         <button style={styles.button} onClick={updateMarks}>
-          Save Marks
+          Save
         </button>
       </div>
     </div>
@@ -133,12 +148,7 @@ export default function StaffDashboard() {
 
 /* CSS */
 const styles = {
-  container: {
-    width: "80%",
-    margin: "auto",
-    textAlign: "center",
-    fontFamily: "Arial"
-  },
+  container: { width: "80%", margin: "auto", textAlign: "center" },
 
   card: {
     background: "#fff",

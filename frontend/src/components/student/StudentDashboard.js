@@ -41,10 +41,9 @@ export default function StudentDashboard() {
         <div style={styles.resultCard}>
           <h2>{student.name}</h2>
 
-          <p><b>Roll:</b> {student.rollNumber}</p>
-          <p><b>Department:</b> {student.department}</p>
-          <p><b>Semester:</b> {student.semester}</p>
-          <p><b>Subject:</b> {student.subject}</p>
+          <p>Roll: {student.rollNumber}</p>
+          <p>Department: {student.department}</p>
+          <p>Subject: {student.subject}</p>
 
           <hr />
 
@@ -62,7 +61,7 @@ export default function StudentDashboard() {
   );
 }
 
-/* CSS */
+/* INTERNAL CSS */
 const styles = {
   container: {
     width: "80%",
