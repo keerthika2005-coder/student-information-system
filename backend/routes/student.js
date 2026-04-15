@@ -7,6 +7,7 @@ const studentSchema = new mongoose.Schema({
   subject: String
 });
 
+// IMPORTANT: force collection name = students
 module.exports =
   mongoose.models.Student ||
   mongoose.model('Student', studentSchema, 'students');
