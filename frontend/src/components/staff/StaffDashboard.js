@@ -1,36 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 const API = process.env.REACT_APP_API_URL;
 
 export default function StaffDashboard() {
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(false);
-
   const [rollNumber, setRollNumber] = useState("");
   const [attendance, setAttendance] = useState("");
   const [assignmentMarks, setAssignmentMarks] = useState("");
   const [internalMarks, setInternalMarks] = useState("");
 
-  useEffect(() => {
-    loadStudents();
-  }, []);
-
-  const loadStudents = async () => {
-    try {
-      setLoading(true); // ✅ SHOW LOADING
-
-      const res = await axios.get(`${API}/api/staff/students`);
-
-      setStudents(res.data);
-      setLoading(false); // ✅ STOP LOADING
-    } catch (err) {
-      setLoading(false);
-      alert("❌ Failed to load students");
-    }
-  };
-
-  const updateMarks = async () => {
+  const saveMarks = async () => {
     try {
       await axios.put(`${API}/api/staff/update/${rollNumber}`, {
         attendance,
@@ -38,10 +17,15 @@ export default function StaffDashboard() {
         internalMarks
       });
 
-      alert("✅ Marks Updated");
-      loadStudents();
-    } catch {
-      alert("❌ Update failed");
+      alert("✅ Marks Updated Successfully");
+
+      // clear form
+      setRollNumber("");
+      setAttendance("");
+      setAssignmentMarks("");
+      setInternalMarks("");
+    } catch (err) {
+      alert("❌ Update Failed");
     }
   };
 
@@ -49,36 +33,40 @@ export default function StaffDashboard() {
     <div style={styles.container}>
       <h1>👨‍🏫 Staff Dashboard</h1>
 
-      {/* LOADING FIX */}
-      {loading && <p>⏳ Loading students...</p>}
-
-      {/* STUDENT LIST */}
       <div style={styles.card}>
-        <h2>Students</h2>
+        <h2>Enter Student Marks</h2>
 
-        {!loading && students.length === 0 && (
-          <p>No students found</p>
-        )}
+        <input
+          style={styles.input}
+          placeholder="Roll Number"
+          value={rollNumber}
+          onChange={(e) => setRollNumber(e.target.value)}
+        />
 
-        {students.map((s) => (
-          <div key={s._id} style={styles.box}>
-            <p><b>{s.name}</b></p>
-            <p>{s.rollNumber}</p>
-            <p>{s.subject}</p>
-          </div>
-        ))}
-      </div>
+        <input
+          style={styles.input}
+          placeholder="Attendance"
+          value={attendance}
+          onChange={(e) => setAttendance(e.target.value)}
+        />
 
-      {/* MARK ENTRY */}
-      <div style={styles.card}>
-        <h2>Enter Marks</h2>
+        <input
+          style={styles.input}
+          placeholder="Assignment Marks"
+          value={assignmentMarks}
+          onChange={(e) => setAssignmentMarks(e.target.value)}
+        />
 
-        <input placeholder="Roll Number" onChange={(e) => setRollNumber(e.target.value)} />
-        <input placeholder="Attendance" onChange={(e) => setAttendance(e.target.value)} />
-        <input placeholder="Assignment" onChange={(e) => setAssignmentMarks(e.target.value)} />
-        <input placeholder="Internal" onChange={(e) => setInternalMarks(e.target.value)} />
+        <input
+          style={styles.input}
+          placeholder="Internal Marks"
+          value={internalMarks}
+          onChange={(e) => setInternalMarks(e.target.value)}
+        />
 
-        <button onClick={updateMarks}>Save</button>
+        <button style={styles.button} onClick={saveMarks}>
+          Save Marks
+        </button>
       </div>
     </div>
   );
@@ -95,15 +83,29 @@ const styles = {
 
   card: {
     background: "#fff",
-    padding: "20px",
-    margin: "20px auto",
+    padding: "25px",
+    marginTop: "30px",
     width: "60%",
-    borderRadius: "10px",
+    marginLeft: "auto",
+    marginRight: "auto",
+    borderRadius: "12px",
     boxShadow: "0 2px 10px #ccc"
   },
 
-  box: {
-    padding: "10px",
-    borderBottom: "1px solid #ddd"
+  input: {
+    width: "80%",
+    padding: "12px",
+    margin: "10px",
+    borderRadius: "8px",
+    border: "1px solid #ccc"
+  },
+
+  button: {
+    padding: "12px 25px",
+    background: "#4CAF50",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer"
   }
 };
