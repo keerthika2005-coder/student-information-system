@@ -2,12 +2,14 @@
 const router = express.Router();
 const Student = require("../models/Student");
 
-// ✅ GET STUDENT RESULT BY ROLL NUMBER
+// ✅ GET STUDENT BY ROLL NUMBER (FIXED)
 router.get("/:rollNumber", async (req, res) => {
   try {
+    const rollNumber = req.params.rollNumber.trim();
+
     const student = await Student.findOne({
-      rollNumber: req.params.rollNumber
-    });
+      rollNumber: rollNumber
+    }).lean();
 
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
@@ -15,7 +17,8 @@ router.get("/:rollNumber", async (req, res) => {
 
     res.json(student);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.log(err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 

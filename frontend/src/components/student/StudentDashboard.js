@@ -1,18 +1,22 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const API = process.env.REACT_APP_API_URL;
+const API = "https://student-information-system-f2js.onrender.com";
 
 export default function StudentDashboard() {
   const [rollNumber, setRollNumber] = useState("");
   const [student, setStudent] = useState(null);
 
-  const getResult = async () => {
+  const fetchStudent = async () => {
     try {
-      const res = await axios.get(`${API}/api/student/${rollNumber}`);
+      const res = await axios.get(
+        `${API}/api/student/${rollNumber.trim()}`
+      );
+
       setStudent(res.data);
-    } catch {
-      alert("❌ Not found");
+    } catch (err) {
+      alert("❌ Student not found");
+      setStudent(null);
     }
   };
 
@@ -24,61 +28,59 @@ export default function StudentDashboard() {
         <input
           style={styles.input}
           placeholder="Enter Roll Number"
+          value={rollNumber}
           onChange={(e) => setRollNumber(e.target.value)}
         />
 
-        <button style={styles.button} onClick={getResult}>
+        <button style={styles.button} onClick={fetchStudent}>
           View Result
         </button>
       </div>
 
       {student && (
         <div style={styles.card}>
-          <h2>{student.name}</h2>
-          <p>Roll: {student.rollNumber}</p>
-          <p>Department: {student.department}</p>
-          <p>Subject: {student.subject}</p>
+          <h2>📘 Student Result</h2>
+
+          <p><b>Name:</b> {student.name}</p>
+          <p><b>Roll No:</b> {student.rollNumber}</p>
+          <p><b>Department:</b> {student.department}</p>
+          <p><b>Subject:</b> {student.subject}</p>
 
           <hr />
 
-          <p>Attendance: {student.attendance}</p>
-          <p>Assignment: {student.assignmentMarks}</p>
-          <p>Internal: {student.internalMarks}</p>
+          <p><b>Attendance:</b> {student.attendance || 0}</p>
+          <p><b>Assignment:</b> {student.assignmentMarks || 0}</p>
+          <p><b>Internal:</b> {student.internalMarks || 0}</p>
 
           <hr />
 
-          <h3>Total: {student.total}</h3>
-          <h3>Grade: {student.grade}</h3>
+          <h3>Total: {student.total || 0}</h3>
+          <h3>Grade: {student.grade || "N/A"}</h3>
         </div>
       )}
     </div>
   );
 }
 
-/* INTERNAL CSS */
 const styles = {
   container: {
-    width: "80%",
-    margin: "auto",
     textAlign: "center",
     fontFamily: "Arial"
   },
 
   card: {
-    background: "#fff",
-    padding: "20px",
+    width: "350px",
     margin: "20px auto",
-    width: "60%",
+    padding: "20px",
+    background: "white",
     borderRadius: "10px",
     boxShadow: "0 2px 10px #ccc"
   },
 
   input: {
-    width: "80%",
+    width: "90%",
     padding: "10px",
-    margin: "10px",
-    borderRadius: "8px",
-    border: "1px solid #ccc"
+    marginBottom: "10px"
   },
 
   button: {
@@ -86,7 +88,6 @@ const styles = {
     background: "#2196F3",
     color: "white",
     border: "none",
-    borderRadius: "8px",
-    cursor: "pointer"
+    borderRadius: "8px"
   }
 };
