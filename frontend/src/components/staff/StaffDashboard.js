@@ -4,11 +4,11 @@ import axios from "axios";
 const API = process.env.REACT_APP_API_URL;
 
 const DEPARTMENTS = ["CSE", "IT", "ECE"];
-const SEMESTERS = ["1", "2", "3", "4", "5", "6"];
+const SUBJECTS = ["Java", "Python", "AI", "Networks"];
 
 export default function StaffDashboard() {
   const [department, setDepartment] = useState("");
-  const [semester, setSemester] = useState("");
+  const [subject, setSubject] = useState("");
   const [students, setStudents] = useState([]);
 
   const [rollNumber, setRollNumber] = useState("");
@@ -20,11 +20,10 @@ export default function StaffDashboard() {
   const loadStudents = async () => {
     try {
       const res = await axios.get(
-        `${API}/api/staff/students?department=${department}&semester=${semester}`
+        `${API}/api/staff/students?department=${department}&subject=${subject}`
       );
-
       setStudents(res.data);
-    } catch (err) {
+    } catch {
       alert("❌ Failed to load students");
     }
   };
@@ -34,14 +33,10 @@ export default function StaffDashboard() {
     try {
       await axios.put(
         `${API}/api/staff/update/${rollNumber}`,
-        {
-          attendance,
-          assignmentMarks,
-          internalMarks
-        }
+        { attendance, assignmentMarks, internalMarks }
       );
 
-      alert("✅ Updated Successfully");
+      alert("✅ Marks Updated");
     } catch {
       alert("❌ Update failed");
     }
@@ -59,19 +54,19 @@ export default function StaffDashboard() {
           onChange={(e) => setDepartment(e.target.value)}
         >
           <option value="">Select Department</option>
-          {DEPARTMENTS.map((d, i) => (
-            <option key={i} value={d}>{d}</option>
+          {DEPARTMENTS.map((d) => (
+            <option key={d} value={d}>{d}</option>
           ))}
         </select>
 
         <select
           style={styles.input}
-          value={semester}
-          onChange={(e) => setSemester(e.target.value)}
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
         >
-          <option value="">Select Semester</option>
-          {SEMESTERS.map((s, i) => (
-            <option key={i} value={s}>{s}</option>
+          <option value="">Select Subject</option>
+          {SUBJECTS.map((s) => (
+            <option key={s} value={s}>{s}</option>
           ))}
         </select>
 
@@ -87,9 +82,10 @@ export default function StaffDashboard() {
         ) : (
           students.map((s) => (
             <div key={s._id} style={styles.cardBox}>
-              <p><b>{s.name}</b></p>
+              <h3>{s.name}</h3>
               <p>{s.rollNumber}</p>
-              <p>{s.department} - Sem {s.semester}</p>
+              <p>{s.department}</p>
+              <p>{s.subject}</p>
             </div>
           ))
         )}
@@ -128,7 +124,7 @@ export default function StaffDashboard() {
         />
 
         <button style={styles.button} onClick={updateMarks}>
-          Save
+          Save Marks
         </button>
       </div>
     </div>
@@ -137,7 +133,12 @@ export default function StaffDashboard() {
 
 /* CSS */
 const styles = {
-  container: { width: "80%", margin: "auto", textAlign: "center" },
+  container: {
+    width: "80%",
+    margin: "auto",
+    textAlign: "center",
+    fontFamily: "Arial"
+  },
 
   card: {
     background: "#fff",

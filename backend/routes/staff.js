@@ -2,15 +2,17 @@
 const router = express.Router();
 const Student = require("../models/Student");
 
-// ✅ FILTER BY department + semester
+// ✅ FILTER ONLY BY department + subject
 router.get("/students", async (req, res) => {
   try {
-    const { department, semester } = req.query;
+    const { department, subject } = req.query;
 
-    const students = await Student.find({
-      department,
-      semester
-    });
+    const filter = {};
+
+    if (department) filter.department = department;
+    if (subject) filter.subject = subject;
+
+    const students = await Student.find(filter);
 
     res.json(students);
   } catch (err) {
@@ -24,9 +26,9 @@ router.put("/update/:rollNumber", async (req, res) => {
     const { attendance, assignmentMarks, internalMarks } = req.body;
 
     const total =
-      Number(attendance) +
-      Number(assignmentMarks) +
-      Number(internalMarks);
+      Number(attendance || 0) +
+      Number(assignmentMarks || 0) +
+      Number(internalMarks || 0);
 
     let grade = "F";
     if (total >= 90) grade = "A";
