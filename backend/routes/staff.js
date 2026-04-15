@@ -2,17 +2,18 @@
 const router = express.Router();
 const Student = require("../models/Student");
 
-// GET ALL STUDENTS
+// ✅ GET ALL STUDENTS (FAST + SAFE)
 router.get("/students", async (req, res) => {
   try {
-    const students = await Student.find({});
-    res.json(students);
+    const students = await Student.find({}).lean(); // ✅ IMPORTANT FIX
+    res.status(200).json(students);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.log("GET students error:", err);
+    res.status(500).json({ error: "Failed to load students" });
   }
 });
 
-// UPDATE MARKS
+// ✅ UPDATE MARKS BY ROLL NUMBER
 router.put("/update/:rollNumber", async (req, res) => {
   try {
     const { attendance, assignmentMarks, internalMarks } = req.body;
@@ -27,15 +28,26 @@ router.put("/update/:rollNumber", async (req, res) => {
     else if (total >= 75) grade = "B";
     else if (total >= 60) grade = "C";
 
-    const updated = await Student.findOneAndUpdate(
+    const updatedStudent = await Student.findOneAndUpdate(
       { rollNumber: req.params.rollNumber },
-      { attendance, assignmentMarks, internalMarks, total, grade },
+      {
+        attendance,
+        assignmentMarks,
+        internalMarks,
+        total,
+        grade
+      },
       { new: true }
     );
 
-    res.json(updated);
+    if (!updatedStudent) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.json(updatedStudent);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.log("UPDATE error:", err);
+    res.status(500).json({ error: "Update failed" });
   }
 });
 

@@ -5,6 +5,7 @@ const API = process.env.REACT_APP_API_URL;
 
 export default function StaffDashboard() {
   const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [rollNumber, setRollNumber] = useState("");
   const [attendance, setAttendance] = useState("");
@@ -17,9 +18,14 @@ export default function StaffDashboard() {
 
   const loadStudents = async () => {
     try {
+      setLoading(true); // ✅ SHOW LOADING
+
       const res = await axios.get(`${API}/api/staff/students`);
+
       setStudents(res.data);
-    } catch {
+      setLoading(false); // ✅ STOP LOADING
+    } catch (err) {
+      setLoading(false);
       alert("❌ Failed to load students");
     }
   };
@@ -43,60 +49,42 @@ export default function StaffDashboard() {
     <div style={styles.container}>
       <h1>👨‍🏫 Staff Dashboard</h1>
 
+      {/* LOADING FIX */}
+      {loading && <p>⏳ Loading students...</p>}
+
       {/* STUDENT LIST */}
       <div style={styles.card}>
-        <h2>Student List</h2>
+        <h2>Students</h2>
 
-        {students.length === 0 ? (
+        {!loading && students.length === 0 && (
           <p>No students found</p>
-        ) : (
-          students.map((s) => (
-            <div key={s._id} style={styles.studentBox}>
-              <p><b>{s.name}</b></p>
-              <p>Roll: {s.rollNumber}</p>
-              <p>Subject: {s.subject}</p>
-            </div>
-          ))
         )}
+
+        {students.map((s) => (
+          <div key={s._id} style={styles.box}>
+            <p><b>{s.name}</b></p>
+            <p>{s.rollNumber}</p>
+            <p>{s.subject}</p>
+          </div>
+        ))}
       </div>
 
       {/* MARK ENTRY */}
       <div style={styles.card}>
         <h2>Enter Marks</h2>
 
-        <input
-          style={styles.input}
-          placeholder="Roll Number"
-          onChange={(e) => setRollNumber(e.target.value)}
-        />
+        <input placeholder="Roll Number" onChange={(e) => setRollNumber(e.target.value)} />
+        <input placeholder="Attendance" onChange={(e) => setAttendance(e.target.value)} />
+        <input placeholder="Assignment" onChange={(e) => setAssignmentMarks(e.target.value)} />
+        <input placeholder="Internal" onChange={(e) => setInternalMarks(e.target.value)} />
 
-        <input
-          style={styles.input}
-          placeholder="Attendance"
-          onChange={(e) => setAttendance(e.target.value)}
-        />
-
-        <input
-          style={styles.input}
-          placeholder="Assignment Marks"
-          onChange={(e) => setAssignmentMarks(e.target.value)}
-        />
-
-        <input
-          style={styles.input}
-          placeholder="Internal Marks"
-          onChange={(e) => setInternalMarks(e.target.value)}
-        />
-
-        <button style={styles.button} onClick={updateMarks}>
-          Save Marks
-        </button>
+        <button onClick={updateMarks}>Save</button>
       </div>
     </div>
   );
 }
 
-/* ✅ INTERNAL CSS */
+/* INTERNAL CSS */
 const styles = {
   container: {
     width: "80%",
@@ -114,26 +102,8 @@ const styles = {
     boxShadow: "0 2px 10px #ccc"
   },
 
-  studentBox: {
+  box: {
     padding: "10px",
-    margin: "10px",
     borderBottom: "1px solid #ddd"
-  },
-
-  input: {
-    width: "80%",
-    padding: "10px",
-    margin: "10px",
-    borderRadius: "8px",
-    border: "1px solid #ccc"
-  },
-
-  button: {
-    padding: "10px 20px",
-    background: "#4CAF50",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer"
   }
 };
