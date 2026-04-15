@@ -12,8 +12,9 @@ export default function StudentDashboard() {
       const res = await axios.get(
         `${API}/api/student/${rollNumber}`
       );
+
       setStudent(res.data);
-    } catch {
+    } catch (err) {
       alert("❌ Student not found");
       setStudent(null);
     }
@@ -39,9 +40,10 @@ export default function StudentDashboard() {
       {student && (
         <div style={styles.resultCard}>
           <h2>{student.name}</h2>
-          <p><b>Roll No:</b> {student.rollNumber}</p>
-          <p><b>Department:</b> {student.department}</p>
-          <p><b>Subject:</b> {student.subject}</p>
+
+          <p>Roll No: {student.rollNumber}</p>
+          <p>Department: {student.department}</p>
+          <p>Subject: {student.subject}</p>
 
           <hr />
 
@@ -59,6 +61,7 @@ export default function StudentDashboard() {
   );
 }
 
+/* CSS */
 const styles = {
   container: {
     width: "80%",

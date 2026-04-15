@@ -12,17 +12,21 @@ export default function StaffDashboard() {
   const [assignmentMarks, setAssignmentMarks] = useState("");
   const [internalMarks, setInternalMarks] = useState("");
 
+  // ✅ LOAD STUDENTS BY SUBJECT
   const loadStudents = async () => {
     try {
       const res = await axios.get(
         `${API}/api/staff/students/${subject}`
       );
+
       setStudents(res.data);
-    } catch {
+    } catch (err) {
+      console.log(err);
       alert("❌ Failed to load students");
     }
   };
 
+  // ✅ UPDATE MARKS BY ROLL NUMBER
   const updateMarks = async () => {
     try {
       await axios.put(
@@ -34,8 +38,15 @@ export default function StaffDashboard() {
         }
       );
 
-      alert("✅ Marks Updated");
-    } catch {
+      alert("✅ Marks Updated Successfully");
+
+      // clear inputs
+      setRollNumber("");
+      setAttendance("");
+      setAssignmentMarks("");
+      setInternalMarks("");
+    } catch (err) {
+      console.log(err);
       alert("❌ Update failed");
     }
   };
@@ -44,10 +55,11 @@ export default function StaffDashboard() {
     <div style={styles.container}>
       <h1>👨‍🏫 Staff Dashboard</h1>
 
+      {/* SUBJECT INPUT */}
       <div style={styles.card}>
         <input
           style={styles.input}
-          placeholder="Enter Subject"
+          placeholder="Enter Subject (Maths, CS...)"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
         />
@@ -57,16 +69,22 @@ export default function StaffDashboard() {
         </button>
       </div>
 
+      {/* STUDENT LIST */}
       <div style={styles.grid}>
-        {students.map((s) => (
-          <div key={s._id} style={styles.studentCard}>
-            <p><b>{s.name}</b></p>
-            <p>{s.rollNumber}</p>
-            <p>{s.subject}</p>
-          </div>
-        ))}
+        {students.length === 0 ? (
+          <p>No students found</p>
+        ) : (
+          students.map((s) => (
+            <div key={s._id} style={styles.studentCard}>
+              <p><b>Name:</b> {s.name}</p>
+              <p><b>Roll:</b> {s.rollNumber}</p>
+              <p><b>Subject:</b> {s.subject}</p>
+            </div>
+          ))
+        )}
       </div>
 
+      {/* UPDATE MARKS */}
       <div style={styles.card}>
         <h3>Update Marks</h3>
 
@@ -106,6 +124,7 @@ export default function StaffDashboard() {
   );
 }
 
+/* ================= CSS ================= */
 const styles = {
   container: {
     width: "80%",
@@ -150,7 +169,7 @@ const styles = {
     background: "#fff",
     margin: "10px",
     padding: "15px",
-    width: "180px",
+    width: "200px",
     borderRadius: "10px",
     boxShadow: "0 2px 8px #ccc"
   }
