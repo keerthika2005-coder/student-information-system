@@ -1,98 +1,67 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
+import "./styles.css";
+
+const API = process.env.REACT_APP_API_URL;
 
 export default function StaffDashboard() {
+  const [subject, setSubject] = useState("");
   const [students, setStudents] = useState([]);
-  const [rollNumber, setRollNumber] = useState('');
-  const [subject, setSubject] = useState('');
-  const [attendance, setAttendance] = useState('');
-  const [assignmentMarks, setAssignmentMarks] = useState('');
-  const [internalMarks, setInternalMarks] = useState('');
 
-  // ✅ fetch by subject (NOT ALL STUDENTS)
-  const fetchStudents = async (subj) => {
-    try {
-      const res = await axios.get(
-        `https://student-information-system-f2js.onrender.com/api/staff/students/${subj}`
-      );
-      setStudents(res.data);
-    } catch (error) {
-      alert('Failed to fetch students');
-    }
+  const [rollNumber, setRollNumber] = useState("");
+  const [attendance, setAttendance] = useState("");
+  const [assignmentMarks, setAssignmentMarks] = useState("");
+  const [internalMarks, setInternalMarks] = useState("");
+
+  const loadStudents = async () => {
+    const res = await axios.get(
+      `${API}/api/staff/students/${subject}`
+    );
+    setStudents(res.data);
   };
 
-  const saveMarks = async () => {
-    try {
-      await axios.put(
-        `https://student-information-system-f2js.onrender.com/api/staff/update/${rollNumber}`,
-        {
-          attendance,
-          assignmentMarks,
-          internalMarks
-        }
-      );
+  const updateMarks = async () => {
+    await axios.put(
+      `${API}/api/staff/update/${rollNumber}`,
+      { attendance, assignmentMarks, internalMarks }
+    );
 
-      alert('✅ Marks Updated');
-
-      setRollNumber('');
-      setAttendance('');
-      setAssignmentMarks('');
-      setInternalMarks('');
-    } catch (error) {
-      alert('❌ Save failed');
-    }
+    alert("✅ Updated");
   };
 
   return (
-    <div style={{ width: '80%', margin: '30px auto', textAlign: 'center' }}>
-      <h1>👩‍🏫 Staff Dashboard</h1>
+    <div className="container">
+      <h1>👨‍🏫 Staff Dashboard</h1>
 
-      {/* SUBJECT SEARCH */}
-      <div style={{ padding: 20 }}>
+      <div className="card">
         <input
           placeholder="Enter Subject"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
         />
-
-        <button onClick={() => fetchStudents(subject)}>
-          Load Students
-        </button>
+        <button onClick={loadStudents}>Load Students</button>
       </div>
 
-      {/* UPDATE MARKS */}
-      <div>
-        <input
-          placeholder="Roll Number"
-          value={rollNumber}
-          onChange={(e) => setRollNumber(e.target.value)}
-        />
-        <input
-          placeholder="Attendance"
-          value={attendance}
-          onChange={(e) => setAttendance(e.target.value)}
-        />
-        <input
-          placeholder="Assignment"
-          value={assignmentMarks}
-          onChange={(e) => setAssignmentMarks(e.target.value)}
-        />
-        <input
-          placeholder="Internal"
-          value={internalMarks}
-          onChange={(e) => setInternalMarks(e.target.value)}
-        />
-
-        <button onClick={saveMarks}>Save Marks</button>
+      <div className="grid">
+        {students.map((s) => (
+          <div key={s._id} className="studentCard">
+            <p><b>{s.name}</b></p>
+            <p>{s.rollNumber}</p>
+            <p>{s.subject}</p>
+          </div>
+        ))}
       </div>
 
-      {/* STUDENT LIST */}
-      <h2>Students</h2>
-      {students.map((s) => (
-        <div key={s._id}>
-          <p>{s.name} - {s.rollNumber}</p>
-        </div>
-      ))}
+      <div className="card">
+        <h3>Update Marks</h3>
+
+        <input placeholder="Roll Number" onChange={(e) => setRollNumber(e.target.value)} />
+        <input placeholder="Attendance" onChange={(e) => setAttendance(e.target.value)} />
+        <input placeholder="Assignment" onChange={(e) => setAssignmentMarks(e.target.value)} />
+        <input placeholder="Internal" onChange={(e) => setInternalMarks(e.target.value)} />
+
+        <button onClick={updateMarks}>Save</button>
+      </div>
     </div>
   );
 }
